@@ -1,9 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "bookwise.fullname" . }}-api-gateway
+  name: {{ include "alexandrai.fullname" . }}-api-gateway
   labels:
-    {{- include "bookwise.labels" . | nindent 4 }}
+    {{- include "alexandrai.labels" . | nindent 4 }}
     app: api-gateway
 spec:
   replicas: {{ .Values.replicaCount.apiGateway }}
@@ -23,9 +23,9 @@ spec:
             - containerPort: 8000
           envFrom:
             - configMapRef:
-                name: {{ include "bookwise.fullname" . }}-config
+                name: {{ include "alexandrai.fullname" . }}-config
             - secretRef:
-                name: {{ include "bookwise.fullname" . }}-secrets
+                name: {{ include "alexandrai.fullname" . }}-secrets
           resources:
             {{- toYaml .Values.resources.apiGateway | nindent 12 }}
           readinessProbe:

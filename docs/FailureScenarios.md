@@ -1,4 +1,4 @@
-# BookWise AI - Failure Scenarios & Resilient Fallbacks
+# AlexandrAI - Failure Scenarios & Resilient Fallbacks
 
 ## 1. Failure Scenario Matrix
 

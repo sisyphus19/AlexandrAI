@@ -1,5 +1,5 @@
 """
-Small, reproducible evaluation of the BookWise pipeline against a RUNNING stack.
+Small, reproducible evaluation of the AlexandrAI pipeline against a RUNNING stack.
 
 Because the catalog is metadata-only (title / author / rating / year), the test set uses title and
 author queries whose correct answers can be verified from Books.csv. It measures:

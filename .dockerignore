@@ -4,5 +4,5 @@ __pycache__
 .ipynb_checkpoints
 .git
 node_modules
-bookwise_local.db
+alexandrai_local.db
 .env

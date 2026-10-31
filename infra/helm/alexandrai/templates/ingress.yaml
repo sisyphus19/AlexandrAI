@@ -2,9 +2,9 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "bookwise.fullname" . }}-ingress
+  name: {{ include "alexandrai.fullname" . }}-ingress
   labels:
-    {{- include "bookwise.labels" . | nindent 4 }}
+    {{- include "alexandrai.labels" . | nindent 4 }}
   annotations:
     kubernetes.io/ingress.class: {{ .Values.ingress.className | quote }}
 spec:
@@ -16,7 +16,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: {{ include "bookwise.fullname" . }}-api-gateway
+                name: {{ include "alexandrai.fullname" . }}-api-gateway
                 port:
                   number: 8000
 {{- end }}

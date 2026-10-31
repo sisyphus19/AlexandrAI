@@ -34,10 +34,10 @@ from core.vector_db import vector_store
 from core.recommendation_engine import recommendation_engine
 from core.llm_provider import llm_service
 
-logger = get_logger("bookwise-api-monolith")
+logger = get_logger("alexandrai-api-monolith")
 
 app = FastAPI(
-    title="BookWise AI Platform",
+    title="AlexandrAI Platform",
     description="Distributed AI Book Recommendation Platform featuring LLM Reasoning, RAG Vector Search, and Multi-Factor Hybrid Reranking.",
     version="1.0.0",
     docs_url="/docs",
@@ -104,7 +104,7 @@ async def request_tracing_middleware(request: Request, call_next):
 @app.on_event("startup")
 def startup_event():
     init_db()
-    logger.info("BookWise AI Monolithic Core API started successfully.")
+    logger.info("AlexandrAI Monolithic Core API started successfully.")
 
 
 @app.get("/health", response_model=HealthCheckResponse, tags=["System"])

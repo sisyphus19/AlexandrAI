@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: api-gateway
-  namespace: bookwise
+  namespace: alexandrai
   labels:
     app: api-gateway
 spec:
@@ -17,15 +17,15 @@ spec:
     spec:
       containers:
         - name: api-gateway
-          image: bookwise/api-gateway:v1.0.0
+          image: alexandrai/api-gateway:v1.0.0
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8000
           envFrom:
             - configMapRef:
-                name: bookwise-config
+                name: alexandrai-config
             - secretRef:
-                name: bookwise-secrets
+                name: alexandrai-secrets
           resources:
             requests:
               cpu: 250m
@@ -50,7 +50,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: user-service
-  namespace: bookwise
+  namespace: alexandrai
   labels:
     app: user-service
 spec:
@@ -65,15 +65,15 @@ spec:
     spec:
       containers:
         - name: user-service
-          image: bookwise/user-service:v1.0.0
+          image: alexandrai/user-service:v1.0.0
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8001
           envFrom:
             - configMapRef:
-                name: bookwise-config
+                name: alexandrai-config
             - secretRef:
-                name: bookwise-secrets
+                name: alexandrai-secrets
           resources:
             requests:
               cpu: 150m
@@ -98,7 +98,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: book-service
-  namespace: bookwise
+  namespace: alexandrai
   labels:
     app: book-service
 spec:
@@ -113,15 +113,15 @@ spec:
     spec:
       containers:
         - name: book-service
-          image: bookwise/book-service:v1.0.0
+          image: alexandrai/book-service:v1.0.0
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8002
           envFrom:
             - configMapRef:
-                name: bookwise-config
+                name: alexandrai-config
             - secretRef:
-                name: bookwise-secrets
+                name: alexandrai-secrets
           resources:
             requests:
               cpu: 150m
@@ -146,7 +146,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: retrieval-service
-  namespace: bookwise
+  namespace: alexandrai
   labels:
     app: retrieval-service
 spec:
@@ -161,13 +161,13 @@ spec:
     spec:
       containers:
         - name: retrieval-service
-          image: bookwise/retrieval-service:v1.0.0
+          image: alexandrai/retrieval-service:v1.0.0
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8003
           envFrom:
             - configMapRef:
-                name: bookwise-config
+                name: alexandrai-config
           resources:
             requests:
               cpu: 300m
@@ -192,7 +192,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: recommendation-service
-  namespace: bookwise
+  namespace: alexandrai
   labels:
     app: recommendation-service
 spec:
@@ -207,13 +207,13 @@ spec:
     spec:
       containers:
         - name: recommendation-service
-          image: bookwise/recommendation-service:v1.0.0
+          image: alexandrai/recommendation-service:v1.0.0
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8004
           envFrom:
             - configMapRef:
-                name: bookwise-config
+                name: alexandrai-config
           resources:
             requests:
               cpu: 250m
@@ -238,7 +238,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: llm-worker
-  namespace: bookwise
+  namespace: alexandrai
   labels:
     app: llm-worker
 spec:
@@ -253,13 +253,13 @@ spec:
     spec:
       containers:
         - name: llm-worker
-          image: bookwise/llm-worker:v1.0.0
+          image: alexandrai/llm-worker:v1.0.0
           imagePullPolicy: IfNotPresent
           envFrom:
             - configMapRef:
-                name: bookwise-config
+                name: alexandrai-config
             - secretRef:
-                name: bookwise-secrets
+                name: alexandrai-secrets
           resources:
             requests:
               cpu: 500m
@@ -272,7 +272,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: analytics-service
-  namespace: bookwise
+  namespace: alexandrai
   labels:
     app: analytics-service
 spec:
@@ -287,13 +287,13 @@ spec:
     spec:
       containers:
         - name: analytics-service
-          image: bookwise/analytics-service:v1.0.0
+          image: alexandrai/analytics-service:v1.0.0
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8005
           envFrom:
             - configMapRef:
-                name: bookwise-config
+                name: alexandrai-config
           resources:
             requests:
               cpu: 100m
@@ -318,7 +318,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: frontend
-  namespace: bookwise
+  namespace: alexandrai
   labels:
     app: frontend
 spec:
@@ -333,7 +333,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: bookwise/frontend:v1.0.0
+          image: alexandrai/frontend:v1.0.0
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 80

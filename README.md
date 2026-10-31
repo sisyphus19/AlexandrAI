@@ -1,6 +1,6 @@
-# BookWise AI
+# AlexandrAI
 
-[![CI](https://github.com/sisyphus19/bookwiseAI/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/sisyphus19/bookwiseAI/actions/workflows/ci-cd.yml)
+[![CI](https://github.com/sisyphus19/AlexandrAI/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/sisyphus19/AlexandrAI/actions/workflows/ci-cd.yml)
 ![Python](https://img.shields.io/badge/python-3.11-blue)
 ![FastAPI](https://img.shields.io/badge/FastAPI-microservices-009688)
 ![Qdrant](https://img.shields.io/badge/vector%20db-Qdrant-dc244c)
@@ -64,13 +64,13 @@ More detail in [`docs/`](docs/): [Architecture](docs/Architecture.md) · [Design
 
 ## Quickstart
 
-The dataset (`data/raw/Books.csv`, 10,000 books) is included. By default the ETL loads the first 1,000 (`DEV_LIMIT` in `etl.py`; set to `None` for all).
+The dataset (`data/raw/Books.csv`, 10,000 books) is included. By default the ETL loads the first 1,000. Use `python etl.py --limit N` or `--all` to change that. Re-running is safe (books are upserted by id, nothing is deleted); `python etl.py --reset --yes` wipes and reloads everything.
 
 ### Option A: Full stack with Docker Compose
 
 ```bash
-git clone https://github.com/sisyphus19/bookwiseAI.git
-cd bookwiseAI
+git clone https://github.com/sisyphus19/AlexandrAI.git
+cd AlexandrAI
 cp .env.example .env            # optional: set LLM_PROVIDER / OPENAI_API_KEY
 
 docker compose up --build -d
@@ -96,12 +96,12 @@ curl -X POST http://localhost:8000/api/v1/recommend \
 ### Option B: Single process (SQLite + in-memory vectors, no Docker)
 
 ```bash
-git clone https://github.com/sisyphus19/bookwiseAI.git
-cd bookwiseAI
+git clone https://github.com/sisyphus19/AlexandrAI.git
+cd AlexandrAI
 python -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 
-python etl.py          # builds bookwise_local.db and the in-memory index
+python etl.py          # builds alexandrai_local.db and the in-memory index
 python main.py         # monolith; interactive docs at http://localhost:8000/docs
 ```
 
@@ -119,6 +119,7 @@ All routes are under `/api/v1`. The monolith (`main.py`) exposes everything; in 
 | GET | `/books/{book_id}` | Book detail |
 | POST | `/recommend` | Query → ranked, explained recommendations |
 | POST | `/feedback` | Submit feedback on a recommendation |
+| POST | `/catalog/ask` | Metadata-grounded question about the catalog (gateway only) |
 | GET | `/health`, `/health/live`, `/metrics` | Ops endpoints (no prefix) |
 
 ## Scoring
@@ -128,6 +129,15 @@ FinalScore = 0.45 · Semantic + 0.25 · GenreAffinity + 0.15 · Popularity + 0.1
 ```
 
 Weights are defined in `core/recommendation_engine.py`; the rationale is in [Design Decisions](docs/DesignDecisions.md).
+
+## Tests
+
+```bash
+pip install -r requirements.txt
+pytest tests/ -v
+```
+
+No Docker, Redis or Qdrant is needed: the suite uses in-memory Qdrant, a local queue and mocked downstream services. The first run downloads the embedding model (`all-MiniLM-L6-v2`); offline, a deterministic hashed bag-of-words fallback is used instead.
 
 ## Configuration
 

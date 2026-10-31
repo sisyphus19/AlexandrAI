@@ -1,4 +1,4 @@
-# BookWise AI - Scaling & Performance Strategy
+# AlexandrAI - Scaling & Performance Strategy
 
 ## 1. Horizontal Pod Autoscaler (HPA)
 

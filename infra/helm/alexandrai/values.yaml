@@ -4,7 +4,7 @@ global:
   apiPrefix: /api/v1
 
 image:
-  repository: bookwise
+  repository: alexandrai
   pullPolicy: IfNotPresent
   tag: "v1.0.0"
 
@@ -57,10 +57,10 @@ autoscaling:
 ingress:
   enabled: true
   className: "nginx"
-  host: bookwise.local
+  host: alexandrai.local
 
 database:
-  url: "postgresql://postgres:postgrespassword@postgres:5432/bookwise_db"
+  url: "postgresql://postgres:postgrespassword@postgres:5432/alexandrai_db"
 
 vectorDb:
   host: "qdrant"

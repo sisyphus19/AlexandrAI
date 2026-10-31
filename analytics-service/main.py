@@ -11,7 +11,7 @@ from shared.logging import get_logger
 
 logger = get_logger("analytics-service")
 
-app = FastAPI(title="BookWise Analytics & Business Metrics Service", version="1.0.0")
+app = FastAPI(title="AlexandrAI Analytics & Business Metrics Service", version="1.0.0")
 
 # Business Metrics Gauges & Counters
 POPULAR_GENRES = Counter("business_genre_clicks_total", "Genre clicks count", ["genre"])

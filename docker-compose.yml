@@ -2,11 +2,11 @@
 services:
   postgres:
     image: postgres:15-alpine
-    container_name: bookwise-postgres
+    container_name: alexandrai-postgres
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgrespassword
-      POSTGRES_DB: bookwise_db
+      POSTGRES_DB: alexandrai_db
     ports:
       - "5432:5432"
     volumes:
@@ -19,7 +19,7 @@ services:
 
   qdrant:
     image: qdrant/qdrant:latest
-    container_name: bookwise-qdrant
+    container_name: alexandrai-qdrant
     ports:
       - "6333:6333"
       - "6334:6334"
@@ -28,7 +28,7 @@ services:
 
   redis:
     image: redis:7-alpine
-    container_name: bookwise-redis
+    container_name: alexandrai-redis
     ports:
       - "6379:6379"
     volumes:
@@ -38,11 +38,11 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: bookwise-api-gateway
+    container_name: alexandrai-api-gateway
     # Use --app-dir to point uvicorn at the subdirectory, avoiding hyphenated module import
     command: uvicorn main:app --app-dir api-gateway --host 0.0.0.0 --port 8000
     environment:
-      - DATABASE_URL=postgresql://postgres:postgrespassword@postgres:5432/bookwise_db
+      - DATABASE_URL=postgresql://postgres:postgrespassword@postgres:5432/alexandrai_db
       - QDRANT_HOST=qdrant
       - REDIS_URL=redis://redis:6379/0
       - RETRIEVAL_SERVICE_URL=http://retrieval-service:8003
@@ -64,11 +64,11 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: bookwise-user-service
+    container_name: alexandrai-user-service
     command: uvicorn main:app --app-dir user-service --host 0.0.0.0 --port 8001
     environment:
-      - DATABASE_URL=postgresql://postgres:postgrespassword@postgres:5432/bookwise_db
-      - SECRET_KEY=bookwise-production-secret-key-must-be-32bytes-long
+      - DATABASE_URL=postgresql://postgres:postgrespassword@postgres:5432/alexandrai_db
+      - SECRET_KEY=alexandrai-production-secret-key-must-be-32bytes-long
     ports:
       - "8001:8001"
     depends_on:
@@ -79,10 +79,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: bookwise-book-service
+    container_name: alexandrai-book-service
     command: uvicorn main:app --app-dir book-service --host 0.0.0.0 --port 8002
     environment:
-      - DATABASE_URL=postgresql://postgres:postgrespassword@postgres:5432/bookwise_db
+      - DATABASE_URL=postgresql://postgres:postgrespassword@postgres:5432/alexandrai_db
     ports:
       - "8002:8002"
     depends_on:
@@ -93,7 +93,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: bookwise-retrieval-service
+    container_name: alexandrai-retrieval-service
     command: uvicorn main:app --app-dir retrieval-service --host 0.0.0.0 --port 8003
     environment:
       - QDRANT_HOST=qdrant
@@ -107,7 +107,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: bookwise-recommendation-service
+    container_name: alexandrai-recommendation-service
     command: uvicorn main:app --app-dir recommendation-service --host 0.0.0.0 --port 8004
     ports:
       - "8004:8004"
@@ -116,7 +116,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: bookwise-llm-worker
+    container_name: alexandrai-llm-worker
     command: python llm_worker/worker.py
     environment:
       - REDIS_URL=redis://redis:6379/0
@@ -128,7 +128,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: bookwise-analytics-service
+    container_name: alexandrai-analytics-service
     command: uvicorn main:app --app-dir analytics-service --host 0.0.0.0 --port 8005
     environment:
       - REDIS_URL=redis://redis:6379/0
@@ -139,7 +139,7 @@ services:
 
   frontend:
     image: nginx:alpine
-    container_name: bookwise-frontend
+    container_name: alexandrai-frontend
     volumes:
       - ./frontend:/usr/share/nginx/html:ro
     ports:

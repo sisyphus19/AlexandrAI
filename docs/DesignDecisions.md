@@ -1,8 +1,8 @@
-# BookWise AI - Design Decisions & Tradeoffs
+# AlexandrAI - Design Decisions & Tradeoffs
 
 ## 1. Multi-Factor Hybrid Reranking Formula
 
-Pure semantic similarity often fails to capture individual user constraints such as length preference, author popularity, or recency. BookWise AI implements a weighted hybrid scoring model:
+Pure semantic similarity often fails to capture individual user constraints such as length preference, author popularity, or recency. AlexandrAI implements a weighted hybrid scoring model:
 
 $$\text{Final Score} = w_1 \cdot S_{\text{semantic}} + w_2 \cdot S_{\text{genre}} + w_3 \cdot S_{\text{popularity}} + w_4 \cdot S_{\text{recency}}$$
 

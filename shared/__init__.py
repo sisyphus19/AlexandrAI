@@ -1,1 +1,1 @@
-# BookWise AI Shared Package
+# AlexandrAI Shared Package

@@ -1,14 +1,14 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "bookwise.name" -}}
+{{- define "alexandrai.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Create a default fully qualified app name.
 */}}
-{{- define "bookwise.fullname" -}}
+{{- define "alexandrai.fullname" -}}
 {{- if .Values.fullnameOverride }}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
@@ -24,8 +24,8 @@ Create a default fully qualified app name.
 {{/*
 Common labels
 */}}
-{{- define "bookwise.labels" -}}
-helm.sh/chart: {{ include "bookwise.name" . }}-{{ .Chart.Version | replace "+" "_" }}
+{{- define "alexandrai.labels" -}}
+helm.sh/chart: {{ include "alexandrai.name" . }}-{{ .Chart.Version | replace "+" "_" }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}

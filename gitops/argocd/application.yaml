@@ -1,22 +1,22 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: bookwise-production
+  name: alexandrai-production
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
   source:
-    repoURL: 'https://github.com/bookwise-ai/bookwise.git'
+    repoURL: 'https://github.com/sisyphus19/AlexandrAI.git'
     targetRevision: HEAD
-    path: infra/helm/bookwise
+    path: infra/helm/alexandrai
     helm:
       valueFiles:
         - ../../../gitops/environments/prod/values.yaml
   destination:
     server: 'https://kubernetes.default.svc'
-    namespace: bookwise
+    namespace: alexandrai
   syncPolicy:
     automated:
       prune: true

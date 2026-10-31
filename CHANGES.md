@@ -1,3 +1,16 @@
+# Changes in this revision (test-suite fixes + rename)
+
+- **Renamed** the project from BookWise AI / `bookwiseAI` to **AlexandrAI** (docs, UI titles, service names, Docker container and image names, Helm chart `infra/helm/alexandrai`, Kubernetes namespace `alexandrai`, database `alexandrai_db`, SQLite file `alexandrai_local.db`).
+- `core/llm_provider.py`: `_fmt_book_line` is a module-level function (it was nested inside `OllamaProvider`); prompt braces are escaped; the OpenAI path used an undefined variable; providers now raise on failure so `fallback_used` is reported correctly; mock explanations no longer invent page counts or themes; `LLMReasoningService.provider_name` added (the worker reads it).
+- `core/recommendation_engine.py`: unknown page count / year (0) no longer produce badges, defaults or a fake recency score.
+- `core/vector_db.py`: `points_count()` and `clear()`; embedding size is validated against `VECTOR_DIMENSION`; searches use `query_points`; offline fallback embedder is deterministic across processes (it used the per-process-salted `hash()`).
+- `etl.py`: required-column check, de-duplication, blank-title rows dropped, clipping to column limits, rating clamp, idempotent upsert (no more delete-all), CLI: `--limit`, `--all`, `--reset --yes`.
+- `api-gateway/main.py`: distinguishes empty index / retrieval outage / ranking outage, waits `LLM_JOB_WAIT_SECONDS` for the worker, degrades to ranked results when the worker is down, response cache, `POST /catalog/ask`.
+- `shared`: `LLM_JOB_WAIT_SECONDS` setting, placeholder `OPENAI_API_KEY` values (`your_...`) are treated as unset, `message` field on `RecommendationResponse`, Pydantic v2 `json_schema_extra` / `ConfigDict`.
+- `pytest.ini` added; `qdrant-client>=1.10.0` (needed for `query_points`).
+
+---
+
 # Changes in this revision
 
 **Root causes found**

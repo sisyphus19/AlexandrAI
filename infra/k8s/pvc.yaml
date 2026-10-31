@@ -2,7 +2,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: postgres-pvc
-  namespace: bookwise
+  namespace: alexandrai
 spec:
   accessModes:
     - ReadWriteOnce
@@ -14,7 +14,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: qdrant-pvc
-  namespace: bookwise
+  namespace: alexandrai
 spec:
   accessModes:
     - ReadWriteOnce

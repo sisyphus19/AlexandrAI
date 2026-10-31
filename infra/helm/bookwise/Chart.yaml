@@ -1,9 +1,0 @@
-apiVersion: v2
-name: bookwise
-description: A Helm chart for BookWise AI - Distributed AI Book Recommendation Platform
-type: application
-version: 1.0.0
-appVersion: "1.0.0"
-maintainers:
-  - name: BookWise AI Core Team
-    email: devops@bookwise.ai

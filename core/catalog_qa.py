@@ -1,14 +1,16 @@
 """Metadata-grounded catalog QA. This is intentionally not full-text book RAG."""
 import json
-from typing import Any, Dict, List
+from typing import Any
+
 import httpx
+
 from shared.config import settings
 from shared.logging import get_logger
 
 logger = get_logger("catalog-qa")
 
 
-def _source_record(book: Dict[str, Any]) -> Dict[str, Any]:
+def _source_record(book: dict[str, Any]) -> dict[str, Any]:
     return {
         "book_id": int(book.get("id", 0)),
         "title": str(book.get("title") or "Unknown title"),
@@ -18,7 +20,12 @@ def _source_record(book: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
-async def answer_catalog_question(question: str, retrieved: List[Dict[str, Any]]) -> str:
+def source_records(retrieved: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Public helper: the citation records (id/title/author/rating/year) for a set of retrieved books."""
+    return [_source_record(book) for book in retrieved]
+
+
+async def answer_catalog_question(question: str, retrieved: list[dict[str, Any]]) -> str:
     """Answer only from retrieved metadata; fall back safely when OpenAI is unavailable."""
     sources = [_source_record(book) for book in retrieved]
     if not sources:

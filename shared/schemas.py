@@ -1,17 +1,17 @@
-from pydantic import BaseModel, Field, EmailStr
-from typing import List, Optional, Dict, Any
 from datetime import datetime
+
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 # --- Auth & User Schemas ---
 
 class UserRegisterRequest(BaseModel):
-    username: str = Field(..., min_length=3, max_length=50, example="bookworm42")
-    email: EmailStr = Field(..., example="user@example.com")
-    password: str = Field(..., min_length=6, example="SecurePass123!")
+    username: str = Field(..., min_length=3, max_length=50, json_schema_extra={"example": "bookworm42"})
+    email: EmailStr = Field(..., json_schema_extra={"example": "user@example.com"})
+    password: str = Field(..., min_length=6, json_schema_extra={"example": "SecurePass123!"})
 
 class UserLoginRequest(BaseModel):
-    username: str = Field(..., example="bookworm42")
-    password: str = Field(..., example="SecurePass123!")
+    username: str = Field(..., json_schema_extra={"example": "bookworm42"})
+    password: str = Field(..., json_schema_extra={"example": "SecurePass123!"})
 
 class TokenResponse(BaseModel):
     access_token: str
@@ -20,55 +20,53 @@ class TokenResponse(BaseModel):
     username: str
 
 class UserPreferencesUpdate(BaseModel):
-    favorite_genres: List[str] = Field(default_factory=list, example=["Sci-Fi", "Philosophy"])
-    preferred_book_length: Optional[str] = Field(None, example="medium")  # short (<300), medium (300-500), long (>500)
-    preferred_mood: Optional[str] = Field(None, example="thought-provoking")
+    favorite_genres: list[str] = Field(default_factory=list, json_schema_extra={"example": ["Sci-Fi", "Philosophy"]})
+    preferred_book_length: str | None = Field(None, json_schema_extra={"example": "medium"})  # short (<300), medium (300-500), long (>500)
+    preferred_mood: str | None = Field(None, json_schema_extra={"example": "thought-provoking"})
 
 class UserProfileResponse(BaseModel):
     id: int
     username: str
     email: str
-    favorite_genres: List[str]
-    preferred_book_length: Optional[str]
-    preferred_mood: Optional[str]
+    favorite_genres: list[str]
+    preferred_book_length: str | None
+    preferred_mood: str | None
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 # --- Book Schemas ---
 
 class BookBase(BaseModel):
     title: str
     author: str
-    genres: List[str]
+    genres: list[str]
     description: str
     rating: float = Field(..., ge=0.0, le=5.0)
     page_count: int
     publication_year: int
-    cover_image_url: Optional[str] = None
+    cover_image_url: str | None = None
 
 class BookResponse(BookBase):
     id: int
-    reviews_summary: Optional[str] = None
-    created_at: Optional[datetime] = None
+    reviews_summary: str | None = None
+    created_at: datetime | None = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 # --- Retrieval Schemas ---
 
 class RetrievalRequest(BaseModel):
-    query: str = Field(..., example="philosophical sci-fi books like Dune")
+    query: str = Field(..., json_schema_extra={"example": "philosophical sci-fi books like Dune"})
     top_k: int = Field(default=20, ge=1, le=50)
-    genres: Optional[List[str]] = None
-    max_page_count: Optional[int] = None
+    genres: list[str] | None = None
+    max_page_count: int | None = None
 
 class CandidateBook(BaseModel):
     id: int
     title: str
     author: str
-    genres: List[str]
+    genres: list[str]
     description: str
     rating: float
     page_count: int
@@ -88,45 +86,46 @@ class RankedCandidate(BaseModel):
     id: int
     title: str
     author: str
-    genres: List[str]
+    genres: list[str]
     description: str
     rating: float
     page_count: int
     publication_year: int
     score_breakdown: ScoreBreakdown
-    explainability_badges: List[str] = Field(default_factory=list)
+    explainability_badges: list[str] = Field(default_factory=list)
 
 class RecommendationRequest(BaseModel):
-    query: str = Field(..., example="Suggest fantasy books with political intrigue but less violence")
-    user_id: Optional[int] = None
-    favorite_genres: Optional[List[str]] = None
-    preferred_mood: Optional[str] = None
-    max_page_count: Optional[int] = None
+    query: str = Field(..., json_schema_extra={"example": "Suggest fantasy books with political intrigue but less violence"})
+    user_id: int | None = None
+    favorite_genres: list[str] | None = None
+    preferred_mood: str | None = None
+    max_page_count: int | None = None
     top_k: int = Field(default=5, ge=1, le=20)
 
 class ExplainedRecommendation(BaseModel):
     book: BookResponse
     final_score: float
     score_breakdown: ScoreBreakdown
-    reasoning_bullets: List[str]  # e.g., ["✓ shares philosophical sci-fi themes", "✓ medium-length novel (~280 pages)"]
+    reasoning_bullets: list[str]  # e.g., ["✓ shares philosophical sci-fi themes", "✓ medium-length novel (~280 pages)"]
     llm_explanation: str
 
 class RecommendationResponse(BaseModel):
     query: str
     request_id: str
-    recommendations: List[ExplainedRecommendation]
+    recommendations: list[ExplainedRecommendation]
     total_candidates_retrieved: int
     execution_time_ms: float
     llm_fallback_used: bool = False
+    message: str | None = None  # human-readable status when results are empty or degraded
 
 # --- Feedback Schema ---
 
 class FeedbackRequest(BaseModel):
-    recommendation_id: Optional[str] = None
+    recommendation_id: str | None = None
     book_id: int
-    rating: int = Field(..., ge=1, le=5, example=5)  # 1 to 5 stars or thumbs up/down mapped
+    rating: int = Field(..., ge=1, le=5, json_schema_extra={"example": 5})  # 1 to 5 stars or thumbs up/down mapped
     is_helpful: bool = True
-    comment: Optional[str] = None
+    comment: str | None = None
 
 class FeedbackResponse(BaseModel):
     status: str = "success"
@@ -140,4 +139,22 @@ class HealthCheckResponse(BaseModel):
     service: str
     timestamp: datetime
     version: str = "1.0.0"
-    dependencies: Dict[str, str] = Field(default_factory=dict)
+    dependencies: dict[str, str] = Field(default_factory=dict)
+
+# --- Catalog Q&A (metadata-grounded) ---
+
+class CatalogAskRequest(BaseModel):
+    question: str = Field(..., min_length=1, json_schema_extra={"example": "Which books are written by Suzanne Collins?"})
+    top_k: int = Field(default=5, ge=1, le=20)
+
+class CatalogSource(BaseModel):
+    book_id: int
+    title: str
+    author: str
+    rating: float
+    publication_year: int
+
+class CatalogAskResponse(BaseModel):
+    question: str
+    answer: str
+    sources: list[CatalogSource]

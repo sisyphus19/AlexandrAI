@@ -10,7 +10,7 @@ class JSONFormatter(logging.Formatter):
     Structured JSON log formatter for production microservice observability.
     Outputs log records with request_id, service name, severity, timestamp, and latency metrics.
     """
-    def __init__(self, service_name: str = "bookwise-service"):
+    def __init__(self, service_name: str = "alexandrai-service"):
         super().__init__()
         self.service_name = service_name
 

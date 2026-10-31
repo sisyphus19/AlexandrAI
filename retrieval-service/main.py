@@ -14,7 +14,7 @@ from core.vector_db import vector_store
 
 logger = get_logger("retrieval-service")
 
-app = FastAPI(title="BookWise Retrieval Service (RAG)", version="1.0.0")
+app = FastAPI(title="AlexandrAI Retrieval Service (RAG)", version="1.0.0")
 
 @app.get("/health")
 def health():

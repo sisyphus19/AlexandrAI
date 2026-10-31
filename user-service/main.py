@@ -15,7 +15,7 @@ from core.auth import hash_password, verify_password, create_access_token, get_c
 
 logger = get_logger("user-service")
 
-app = FastAPI(title="BookWise User Service", version="1.0.0")
+app = FastAPI(title="AlexandrAI User Service", version="1.0.0")
 
 @app.on_event("startup")
 def startup():

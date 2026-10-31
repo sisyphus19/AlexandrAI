@@ -15,7 +15,7 @@ from core.database import get_db, BookModel, init_db
 
 logger = get_logger("book-service")
 
-app = FastAPI(title="BookWise Book Metadata Service", version="1.0.0")
+app = FastAPI(title="AlexandrAI Book Metadata Service", version="1.0.0")
 
 @app.on_event("startup")
 def startup():

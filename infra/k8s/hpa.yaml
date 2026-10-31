@@ -2,7 +2,7 @@ apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: retrieval-service-hpa
-  namespace: bookwise
+  namespace: alexandrai
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
@@ -22,7 +22,7 @@ apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: llm-worker-hpa
-  namespace: bookwise
+  namespace: alexandrai
 spec:
   scaleTargetRef:
     apiVersion: apps/v1

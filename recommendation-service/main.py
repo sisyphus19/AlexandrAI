@@ -15,7 +15,7 @@ from core.recommendation_engine import recommendation_engine
 
 logger = get_logger("recommendation-service")
 
-app = FastAPI(title="BookWise Recommendation Engine Service", version="1.0.0")
+app = FastAPI(title="AlexandrAI Recommendation Engine Service", version="1.0.0")
 
 class RankRequest(BaseModel):
     candidates: List[Dict[str, Any]]

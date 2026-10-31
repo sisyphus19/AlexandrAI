@@ -1,4 +1,4 @@
-name: BookWise AI CI/CD Pipeline
+name: AlexandrAI CI/CD Pipeline
 
 on:
   push:
@@ -57,7 +57,7 @@ jobs:
           context: .
           file: Dockerfile
           push: false
-          tags: bookwise/${{ matrix.service }}:${{ github.sha }}
+          tags: alexandrai/${{ matrix.service }}:${{ github.sha }}
 
   helm-lint:
     name: Helm Chart Validation
@@ -73,8 +73,8 @@ jobs:
 
       - name: Lint Helm Chart
         run: |
-          helm lint infra/helm/bookwise
+          helm lint infra/helm/alexandrai
 
       - name: Helm Template Dry Run
         run: |
-          helm template bookwise infra/helm/bookwise --values gitops/environments/prod/values.yaml
+          helm template alexandrai infra/helm/alexandrai --values gitops/environments/prod/values.yaml

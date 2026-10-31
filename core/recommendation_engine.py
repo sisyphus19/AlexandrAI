@@ -1,8 +1,9 @@
 import math
-from typing import List, Dict, Any, Optional
 from datetime import datetime
-from shared.schemas import ScoreBreakdown, RankedCandidate, CandidateBook
+from typing import Any
+
 from shared.logging import get_logger
+from shared.schemas import RankedCandidate, ScoreBreakdown
 
 logger = get_logger("recommendation-engine")
 
@@ -10,12 +11,14 @@ class CandidateFilter:
     """Filters retrieved candidate books based on user hard boundaries and safety constraints."""
     def filter_candidates(
         self,
-        candidates: List[Dict[str, Any]],
-        max_page_count: Optional[int] = None
-    ) -> List[Dict[str, Any]]:
+        candidates: list[dict[str, Any]],
+        max_page_count: int | None = None
+    ) -> list[dict[str, Any]]:
         filtered = []
         for cand in candidates:
-            if max_page_count and cand.get("page_count", 0) > max_page_count:
+            # page_count of 0/None means "unknown": never exclude a book for a value we don't have
+            pages = cand.get("page_count") or 0
+            if max_page_count and pages > max_page_count:
                 continue
             filtered.append(cand)
         return filtered if filtered else candidates  # Fallback to candidates if all filtered out
@@ -23,7 +26,7 @@ class CandidateFilter:
 
 class FeatureExtractor:
     """Extracts features for hybrid scoring: semantic similarity, genre affinity, popularity prior, and recency factor."""
-    def compute_genre_affinity(self, book_genres: List[str], preferred_genres: Optional[List[str]]) -> float:
+    def compute_genre_affinity(self, book_genres: list[str], preferred_genres: list[str] | None) -> float:
         if not preferred_genres or not book_genres:
             return 0.5  # Neutral default for cold start users
         
@@ -39,7 +42,9 @@ class FeatureExtractor:
         # Scale 0..5 rating to 0..1 range
         return max(0.0, min(1.0, rating / 5.0))
 
-    def compute_recency_factor(self, publication_year: int) -> float:
+    def compute_recency_factor(self, publication_year: int | None) -> float:
+        if not publication_year or publication_year <= 0:
+            return 0.5  # unknown year -> neutral, neither rewarded nor penalised
         current_year = datetime.now().year
         age = max(0, current_year - publication_year)
         # Exponential decay half-life ~10 years
@@ -59,7 +64,7 @@ class ScoringEngine:
 
     def score_candidate(
         self,
-        candidate: Dict[str, Any],
+        candidate: dict[str, Any],
         genre_affinity: float,
         popularity_prior: float,
         recency_factor: float
@@ -84,7 +89,7 @@ class ScoringEngine:
 
 class Ranker:
     """Sorts candidate books by final composite score and generates rule-based explainability badges."""
-    def generate_badges(self, candidate: Dict[str, Any], score_breakdown: ScoreBreakdown, preferred_genres: Optional[List[str]]) -> List[str]:
+    def generate_badges(self, candidate: dict[str, Any], score_breakdown: ScoreBreakdown, preferred_genres: list[str] | None) -> list[str]:
         badges = []
         
         if score_breakdown.semantic_score >= 0.70:
@@ -97,28 +102,31 @@ class Ranker:
             if matched:
                 badges.append(f"✓ Matches favorite genre: {matched[0]}")
                 
-        page_count = candidate.get("page_count", 300)
-        if page_count < 300:
-            badges.append(f"✓ Quick read ({page_count} pages)")
-        elif page_count <= 500:
-            badges.append(f"✓ Medium length ({page_count} pages)")
-        else:
-            badges.append(f"✓ Epic novel ({page_count} pages)")
-            
+        # Only describe length when it is actually known (0/None = unknown -> no badge).
+        page_count = candidate.get("page_count") or 0
+        if page_count > 0:
+            if page_count < 300:
+                badges.append(f"✓ Quick read ({page_count} pages)")
+            elif page_count <= 500:
+                badges.append(f"✓ Medium length ({page_count} pages)")
+            else:
+                badges.append(f"✓ Epic novel ({page_count} pages)")
+
         if score_breakdown.popularity_prior >= 0.85:
-            badges.append(f"✓ Highly acclaimed ({candidate.get('rating', 4.5):.1f}★)")
-            
-        if candidate.get("publication_year", 2020) >= 2020:
-            badges.append(f"✓ Modern release ({candidate.get('publication_year')})")
+            badges.append(f"✓ Highly acclaimed ({candidate.get('rating') or 0.0:.1f}★)")
+
+        year = candidate.get("publication_year") or 0
+        if year >= 2020:
+            badges.append(f"✓ Modern release ({year})")
 
         return badges
 
     def rank(
         self,
-        candidates_with_scores: List[tuple[Dict[str, Any], ScoreBreakdown]],
-        preferred_genres: Optional[List[str]] = None,
+        candidates_with_scores: list[tuple[dict[str, Any], ScoreBreakdown]],
+        preferred_genres: list[str] | None = None,
         top_k: int = 5
-    ) -> List[RankedCandidate]:
+    ) -> list[RankedCandidate]:
         ranked = []
         for cand, score in candidates_with_scores:
             badges = self.generate_badges(cand, score, preferred_genres)
@@ -128,9 +136,9 @@ class Ranker:
                 author=cand["author"],
                 genres=cand.get("genres", []),
                 description=cand.get("description", ""),
-                rating=cand.get("rating", 4.0),
-                page_count=cand.get("page_count", 300),
-                publication_year=cand.get("publication_year", 2020),
+                rating=cand.get("rating") or 0.0,
+                page_count=cand.get("page_count") or 0,          # 0 = unknown (never invent a length)
+                publication_year=cand.get("publication_year") or 0,  # 0 = unknown
                 score_breakdown=score,
                 explainability_badges=badges
             ))
@@ -152,11 +160,11 @@ class RecommendationEngine:
 
     def process_recommendations(
         self,
-        retrieved_candidates: List[Dict[str, Any]],
-        favorite_genres: Optional[List[str]] = None,
-        max_page_count: Optional[int] = None,
+        retrieved_candidates: list[dict[str, Any]],
+        favorite_genres: list[str] | None = None,
+        max_page_count: int | None = None,
         top_k: int = 5
-    ) -> List[RankedCandidate]:
+    ) -> list[RankedCandidate]:
         # 1. Filter
         filtered_candidates = self.filter.filter_candidates(retrieved_candidates, max_page_count)
         
@@ -164,8 +172,8 @@ class RecommendationEngine:
         scored_candidates = []
         for cand in filtered_candidates:
             affinity = self.feature_extractor.compute_genre_affinity(cand.get("genres", []), favorite_genres)
-            popularity = self.feature_extractor.compute_popularity_prior(cand.get("rating", 4.0))
-            recency = self.feature_extractor.compute_recency_factor(cand.get("publication_year", 2020))
+            popularity = self.feature_extractor.compute_popularity_prior(cand.get("rating") or 0.0)
+            recency = self.feature_extractor.compute_recency_factor(cand.get("publication_year") or 0)
             
             score_breakdown = self.scoring_engine.score_candidate(cand, affinity, popularity, recency)
             scored_candidates.append((cand, score_breakdown))

@@ -1,8 +1,8 @@
-# BookWise AI - System Architecture Specifications
+# AlexandrAI - System Architecture Specifications
 
 ## 1. Overview & Capability-Driven Design
 
-BookWise AI is structured as a distributed microservice architecture designed to handle semantic vector search, high-throughput feature scoring, and decoupled asynchronous LLM reasoning.
+AlexandrAI is structured as a distributed microservice architecture designed to handle semantic vector search, high-throughput feature scoring, and decoupled asynchronous LLM reasoning.
 
 ```
 +-----------------------------------------------------------------------------------+
